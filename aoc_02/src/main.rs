@@ -45,8 +45,8 @@ fn part_two(name:&str) -> i32 {
 }
 
 fn main() {
-    assert_eq!(150,part_one("example"));
-    println!("{}", part_one("input"));
-    assert_eq!(900,part_two("example"));
-    println!("{}", part_two("input"));
+    assert_eq!(150,part_one("example.txt"));
+    println!("{}", part_one("input.txt"));
+    assert_eq!(900,part_two("example.txt"));
+    println!("{}", part_two("input.txt"));
 }

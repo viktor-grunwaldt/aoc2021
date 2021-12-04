@@ -127,9 +127,9 @@ fn part_two(name: &str) -> u32 {
 }
 
 fn main() {
-    assert_eq!(198, part_one("example"));
-    println!("{}", part_one("input"));
+    assert_eq!(198, part_one("example.txt"));
+    println!("{}", part_one("input.txt"));
 
-    assert_eq!(230, part_two("example"));
-    println!("{}", part_two("input"));
+    assert_eq!(230, part_two("example.txt"));
+    println!("{}", part_two("input.txt"));
 }

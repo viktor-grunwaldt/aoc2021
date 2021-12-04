@@ -43,9 +43,9 @@ fn part_two(filename:&str) -> usize {
 
 fn main() {
     
-    assert_eq!(7, part_one("example"));
-    assert_eq!(5, part_two("example"));
+    assert_eq!(7, part_one("example.txt"));
+    assert_eq!(5, part_two("example.txt"));
     
-    println!("{}", part_one("input"));
-    println!("{}", part_two("input"));
+    println!("{}", part_one("input.txt"));
+    println!("{}", part_two("input.txt"));
 }
