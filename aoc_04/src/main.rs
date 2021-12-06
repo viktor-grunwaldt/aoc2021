@@ -8,10 +8,10 @@ fn read_file(name: &str) -> Vec<String> {
         .collect()
 }
 
-fn print_board(b: &Vec<Vec<i8>>) {
-    b.iter().for_each(|w| println!("{:?}", w));
-    print!("---------------------\n");
-}
+// fn print_board(b: &Vec<Vec<i8>>) {
+//     b.iter().for_each(|w| println!("{:?}", w));
+//     print!("---------------------\n");
+// }
 
 fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
     // parse draw numbers
@@ -27,8 +27,7 @@ fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
         .skip(1)
         .map(|w| w.to_vec())
         .collect();
-    // bs.iter().for_each(|w| println!("{:?}", w));
-    // println!("{:?}", bs);
+
     //parse bingo blocks into bingo boards
     let b: Vec<Vec<Vec<i8>>> = bs
         .into_iter()
@@ -83,18 +82,11 @@ fn is_solved(b: &Vec<Vec<i8>>) -> bool {
             break;
         }
     }
-    if rows {
-        println!("row is solved");
-        print_board(b);
-    }
-    if col {
-        println!("col is solved");
-        print_board(b);
-    }
     rows || col
 }
 
 fn calc_sol(b: &Vec<Vec<i8>>) -> u32 {
+    // sum of all positive elements
     let res = b
         .iter()
         .flatten()
@@ -119,25 +111,27 @@ fn part_one(file: &str) -> u32 {
 }
 
 fn part_two(file: &str) -> u32 {
+    //read
     let (draws, mut boards) = make_boards(read_file(file));
+    //store solved boards
     let mut sol_boards = vec![false; boards.len()];
-    let mut last_board: usize = 0;
+    // don't run twice
     let mut flag = false;
-    let mut winner_board:usize = 0;
+    // store last board nr
+    let mut winner_board: usize = 0;
+
     for num in draws {
         for (i, board) in boards.iter_mut().enumerate() {
             // check not solved boards
             if !sol_boards.get(i).unwrap() {
                 mark_number(board, num);
-
                 if is_solved(board) {
                     sol_boards[i] = true;
-                    last_board = i;
                 }
             }
         }
         //1 board remains
-        if !flag || ((sol_boards.iter().filter(|x| **x).count() + 1) == boards.len())  {
+        if !flag || ((sol_boards.iter().filter(|x| **x).count() + 1) == boards.len()) {
             //find last bingo
             winner_board = sol_boards.iter().position(|&x| !x).unwrap();
             // to calculate solution we need to keep iterating until we hit bingo
@@ -145,7 +139,7 @@ fn part_two(file: &str) -> u32 {
         }
         //0 boards remain
         if flag && (sol_boards.iter().filter(|x| **x).count() == boards.len()) {
-            return calc_sol(boards.get(winner_board).unwrap()) * num as u32
+            return calc_sol(boards.get(winner_board).unwrap()) * num as u32;
         }
     }
 
@@ -157,8 +151,8 @@ fn main() {
     // let example2 = vec![(-1..4).collect(); 5];
     // assert_eq!(false, is_solved(&example));
     // assert_eq!(true, is_solved(&example2));
-    // assert_eq!(4512, part_one("example.txt"));
-    // println!("{}", part_one("input.txt"));
+    assert_eq!(4512, part_one("example.txt"));
+    println!("{}\n\n", part_one("input.txt"));
 
     assert_eq!(1924, part_two("example.txt"));
     println!("{}", part_two("input.txt"));
