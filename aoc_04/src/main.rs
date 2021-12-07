@@ -44,8 +44,6 @@ fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
         })
         .collect();
 
-    // b.iter().for_each(|w| print_board(&w));
-
     (draws, b)
 }
 
@@ -147,10 +145,6 @@ fn part_two(file: &str) -> u32 {
 }
 
 fn main() {
-    // let example = vec![(1..6).collect(); 5];
-    // let example2 = vec![(-1..4).collect(); 5];
-    // assert_eq!(false, is_solved(&example));
-    // assert_eq!(true, is_solved(&example2));
     assert_eq!(4512, part_one("example.txt"));
     println!("{}\n\n", part_one("input.txt"));
 

@@ -118,7 +118,7 @@ fn part_two(name: &str) -> u32 {
     //finds most/least used bits
     let pos_o2 = bin_search(&bin_tr, true).unwrap();
     let pos_co2 = bin_search(&bin_tr, false).unwrap();
-    
+
     // converts vec<u8> to &str to a number
     let o2 = vec_u8_to_num(input[pos_o2].clone());
     let co2 = vec_u8_to_num(input[pos_co2].clone());

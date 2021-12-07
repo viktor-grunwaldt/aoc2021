@@ -1,6 +1,4 @@
-//use std::collections::HashMap;
-
-fn read_file(name:&str) -> Vec<String> {
+fn read_file(name: &str) -> Vec<String> {
     std::fs::read_to_string(name)
         .expect("file not found!")
         .lines()
@@ -8,45 +6,45 @@ fn read_file(name:&str) -> Vec<String> {
         .collect()
 }
 
-fn part_one(name:&str) -> i32 {
+fn part_one(name: &str) -> i32 {
     let mut depth = 0;
     let mut dist = 0;
     for i in read_file(name) {
-        let split:Vec<&str> = i.split_whitespace().collect();
-        let val:i32 = split[1].parse().expect("couldn't parse value");
+        let split: Vec<&str> = i.split_whitespace().collect();
+        let val: i32 = split[1].parse().expect("couldn't parse value");
         match split[0] {
-            "forward"   => dist +=val,
-            "down"      => depth+=val,
-            "up"        => depth-=val,
-            _           => (),
+            "forward" => dist += val,
+            "down" => depth += val,
+            "up" => depth -= val,
+            _ => (),
         }
     }
-    return depth*dist
+    return depth * dist;
 }
 
-fn part_two(name:&str) -> i32 {
+fn part_two(name: &str) -> i32 {
     let mut aim = 0;
     let mut dist = 0;
     let mut depth = 0;
     for i in read_file(name) {
-        let split:Vec<&str> = i.split_whitespace().collect();
-        let val:i32 = split[1].parse().expect("couldn't parse value");
+        let split: Vec<&str> = i.split_whitespace().collect();
+        let val: i32 = split[1].parse().expect("couldn't parse value");
         match split[0] {
-            "down"      => aim+=val,
-            "up"        => aim-=val,
-            "forward"   => {
-                dist +=val;
-                depth += aim*val
-            },
+            "down" => aim += val,
+            "up" => aim -= val,
+            "forward" => {
+                dist += val;
+                depth += aim * val
+            }
             _ => (),
         }
     }
-    return depth*dist
+    return depth * dist;
 }
 
 fn main() {
-    assert_eq!(150,part_one("example.txt"));
+    assert_eq!(150, part_one("example.txt"));
     println!("{}", part_one("input.txt"));
-    assert_eq!(900,part_two("example.txt"));
+    assert_eq!(900, part_two("example.txt"));
     println!("{}", part_two("input.txt"));
 }

@@ -9,10 +9,10 @@ fn read_file(name: &str) -> Vec<i32> {
 fn part_one(name: &str) -> i32 {
     let points = read_file(name);
 
-    //let's see how fast rust is
     let min = points.iter().min().unwrap();
     let max = points.iter().max().unwrap();
-
+    //let's see how fast rust is
+    // so basically calculate all paths from min to max and pick the smallest one
     let sol = (*min..*max)
         .map(|w| points.iter().fold(0, |acc, x| acc + (x - w).abs()))
         .min()
