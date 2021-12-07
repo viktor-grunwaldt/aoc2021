@@ -1,5 +1,3 @@
-use std::cmp;
-
 fn read_file(name: &str) -> Vec<i32> {
     std::fs::read_to_string(name)
         .expect("file not found!")
