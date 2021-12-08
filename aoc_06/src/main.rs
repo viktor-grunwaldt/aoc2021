@@ -15,10 +15,7 @@ fn part_one(name: &str, day: u32) -> u64 {
     }
     // simulate growth
     for _i in 0..day {
-        // let zeroes = fishes_packed[0];
-        for i in 1..9 {
-            fishes_packed.swap(i - 1, i);
-        }
+        fishes_packed.rotate_left(1);
         fishes_packed[6] += fishes_packed[8];
     }
 
