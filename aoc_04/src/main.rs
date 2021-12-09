@@ -1,5 +1,3 @@
-use std::cmp;
-
 fn read_file(name: &str) -> Vec<String> {
     std::fs::read_to_string(name)
         .expect("file not found!")
@@ -7,11 +5,6 @@ fn read_file(name: &str) -> Vec<String> {
         .map(|x| x.parse().unwrap())
         .collect()
 }
-
-// fn print_board(b: &Vec<Vec<i8>>) {
-//     b.iter().for_each(|w| println!("{:?}", w));
-//     print!("---------------------\n");
-// }
 
 fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
     // parse draw numbers
@@ -31,11 +24,9 @@ fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
     //parse bingo blocks into bingo boards
     let b: Vec<Vec<Vec<i8>>> = bs
         .into_iter()
-        .map(|u| {
-            // each board
+        .map(|u| {          // each board
             u.iter()
-                .map(|w| {
-                    //each row
+                .map(|w| {  // each row
                     w.split_whitespace() // each "number"
                         .map(|x| x.trim().parse::<i8>().unwrap())
                         .collect()
@@ -48,48 +39,35 @@ fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
 }
 
 fn mark_number(b: &mut Vec<Vec<i8>>, mark: i8) {
-    for i in b {
-        for j in i {
-            if *j == mark {
-                *j = -1;
-                return;
-            }
+    b.iter_mut().flatten().for_each(|i| {
+        if *i == mark {
+            *i = -1;
+            return;
         }
-    }
+    })
 }
 
 fn is_solved(b: &Vec<Vec<i8>>) -> bool {
     //check rows
     // if in any row all numbers are marked
-    let rows: bool = b.iter().fold(false, |acc, x| {
-        acc || x.iter().fold(true, |acc2, y| acc2 && (*y < 0))
-    });
+    let rows = b.iter().any(|x| x.iter().all(|&y| y < 0));
 
-    //no idea how to do it for columns lmao
-    let mut col = false;
-    for i in 0..b.len() {
-        let mut acc = true;
-        for j in 0..b.get(0).unwrap().len() {
-            if !(b[j][i] < 0) {
-                acc = false;
-                break;
-            }
-        }
-        if acc {
-            col = true;
-            break;
-        }
-    }
+    // bit more elegant
+    let col = (0..b.len()).any(|i| (0..b[0].len()).map(|j| b[j][i]).all(|x| x < 0));
+
     rows || col
 }
 
 fn calc_sol(b: &Vec<Vec<i8>>) -> u32 {
     // sum of all positive elements
-    let res = b
+    let res:u32 = b
         .iter()
         .flatten()
-        .fold(0, |acc, x| acc + cmp::max((*x) as i32, 0));
-    res as u32
+        .filter(|&&x| x>0)
+        .map(|&x| x as u32)
+        .sum();
+
+    res
 }
 
 fn part_one(file: &str) -> u32 {
@@ -146,7 +124,7 @@ fn part_two(file: &str) -> u32 {
 
 fn main() {
     assert_eq!(4512, part_one("example.txt"));
-    println!("{}\n\n", part_one("input.txt"));
+    println!("{}\n", part_one("input.txt"));
 
     assert_eq!(1924, part_two("example.txt"));
     println!("{}", part_two("input.txt"));
