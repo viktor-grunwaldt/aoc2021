@@ -10,7 +10,7 @@ fn read_file(name: &str) -> Vec<String> {
 }
 const BRACKETS: [[char; 4]; 2] = [['(', '[', '{', '<'], [')', ']', '}', '>']];
 
-fn check_brackets(line: &String) -> u32 {
+fn check_brackets(line: &String) -> Option<u32> {
     let mut stack: LinkedList<char> = LinkedList::new();
     for ch in line.chars() {
         // opening bracket
@@ -33,24 +33,24 @@ fn check_brackets(line: &String) -> u32 {
             }
             //incorrect bracket
             else {
-                return match ch {
+                return Some(match ch {
                     ')' => 3,
                     ']' => 57,
                     '}' => 1197,
                     '>' => 25137,
                     _ => 999999999, //shouldn't happen
-                };
+                });
             }
         }
     }
-    0 //don't care if brackets are missing
+    None //don't care if brackets are missing
 }
 
 
 fn part_one(name: &str) -> u32 {
     let input = read_file(name);
 
-    let sum: u32 = input.iter().map(|line| check_brackets(line)).sum();
+    let sum: u32 = input.iter().filter_map(|line| check_brackets(line)).sum();
     sum
 }
 
@@ -107,8 +107,10 @@ fn part_two(name: &str) -> u64 {
 fn main() {
     let ex1 = "{([(<{}[<>[]}>{[]{[(<()>".to_string();
     let ex2 = "[({(<(())[]>[[{[]{<()<>>".to_string();
-    assert_eq!(1197, check_brackets(&ex1));
+    assert_eq!(Some(1197), check_brackets(&ex1));
     assert_eq!(26397, part_one("example.txt"));
+    println!("{}", part_one("input.txt"));
+
 
     assert_eq!(Some(288957), count_missing_brackets(&ex2));
     assert_eq!(288957, part_two("example.txt"));
