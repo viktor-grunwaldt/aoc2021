@@ -1,5 +1,9 @@
 use itertools::sorted;
 use std::collections::LinkedList;
+// I could use hashmaps to make 1 line matches, but why bother?
+// if they are inside a function they'd be constructed/destructed with every call (probably)
+// I also could use phf::phf_map but I don't want to import a crate to save a few LOC
+
 
 fn read_file(name: &str) -> Vec<String> {
     std::fs::read_to_string(name)
@@ -9,6 +13,16 @@ fn read_file(name: &str) -> Vec<String> {
         .collect()
 }
 const BRACKETS: [[char; 4]; 2] = [['(', '[', '{', '<'], [')', ']', '}', '>']];
+
+fn match_to<T>(bracket:&char,a:T,b:T,c:T,d:T,def:T) -> T {
+    match bracket {
+        ')' => a,
+        ']' => b,
+        '}' => c,
+        '>' => d,
+        _ => def
+    }
+}
 
 fn check_brackets(line: &String) -> Option<u32> {
     let mut stack: LinkedList<char> = LinkedList::new();
@@ -20,26 +34,14 @@ fn check_brackets(line: &String) -> Option<u32> {
         // closing bracket
         else {
             //find other bracket
-            let ch_match = match ch {
-                ')' => '(',
-                ']' => '[',
-                '}' => '{',
-                '>' => '<',
-                _ => 'A', //shouldn't happen
-            };
+            let ch_match = match_to(&ch, '(', '[', '{', '<', ' ');
             // correct bracket
             if *stack.back().unwrap() == ch_match {
                 stack.pop_back();
             }
             //incorrect bracket
             else {
-                return Some(match ch {
-                    ')' => 3,
-                    ']' => 57,
-                    '}' => 1197,
-                    '>' => 25137,
-                    _ => 999999999, //shouldn't happen
-                });
+                return Some(match_to(&ch, 3, 57, 1197, 25137, 999_999_999));
             }
         }
     }
@@ -64,13 +66,7 @@ fn count_missing_brackets(line: &String) -> Option<u64> {
         // closing bracket
         else {
             //find other bracket
-            let ch_match = match ch {
-                ')' => '(',
-                ']' => '[',
-                '}' => '{',
-                '>' => '<',
-                _ => 'A', //shouldn't happen
-            };
+            let ch_match = match_to(&ch, '(', '[', '{', '<', ' ');
             // correct bracket
             if *stack.back().unwrap() == ch_match {
                 stack.pop_back();
