@@ -2,14 +2,10 @@ use std::collections::HashMap;
 
 fn read_file(name: &str) -> Vec<Vec<String>> {
     std::fs::read_to_string(name)
-    .expect("file not found!")
-    .lines()    
-    .map(|x| 
-        x.split("-")
-        .map(|y| y.parse().unwrap())
+        .expect("file not found!")
+        .lines()
+        .map(|x| x.split("-").map(|y| y.parse().unwrap()).collect())
         .collect()
-    )
-    .collect()
 }
 
 #[derive(Debug)]
@@ -27,15 +23,24 @@ fn count_paths(caves: &Vec<Cave>, visited: &mut Vec<bool>, pos: usize, end: usiz
         0
     } else {
         visited[pos] = true;
-        let paths = cave.connected.iter().map(|&new_pos| {
-            count_paths(caves, visited, new_pos, end)
-        }).sum();
+        let paths = cave
+            .connected
+            .iter()
+            .map(|&new_pos| count_paths(caves, visited, new_pos, end))
+            .sum();
         visited[pos] = false;
         paths
     }
 }
 
-fn count_paths_2(caves: &Vec<Cave>, visited: &mut Vec<u8>, multi_visited: bool, pos: usize, start: usize, end: usize) -> u32 {
+fn count_paths_2(
+    caves: &Vec<Cave>,
+    visited: &mut Vec<u8>,
+    multi_visited: bool,
+    pos: usize,
+    start: usize,
+    end: usize,
+) -> u32 {
     let cave = &caves[pos];
     let second_visit = visited[pos] >= 1 && !cave.large;
 
@@ -46,20 +51,21 @@ fn count_paths_2(caves: &Vec<Cave>, visited: &mut Vec<u8>, multi_visited: bool, 
     } else {
         let multi_visited = multi_visited || second_visit;
         visited[pos] += 1;
-        let paths = cave.connected.iter().map(|&new_pos| {
-            count_paths_2(caves, visited, multi_visited, new_pos, start, end)
-        }).sum();
+        let paths = cave
+            .connected
+            .iter()
+            .map(|&new_pos| count_paths_2(caves, visited, multi_visited, new_pos, start, end))
+            .sum();
         visited[pos] -= 1;
         paths
     }
 }
 
-
-fn sol(name: &str, is_part_one:bool) -> u32 {
+fn sol(name: &str, is_part_one: bool) -> u32 {
     let input = read_file(name);
-    let mut indexes:HashMap<String, usize> = HashMap::new();
+    let mut indexes: HashMap<String, usize> = HashMap::new();
 
-    let mut caves:Vec<Cave> = Vec::new();
+    let mut caves: Vec<Cave> = Vec::new();
 
     for edge in input {
         for node in &edge {
@@ -68,7 +74,7 @@ fn sol(name: &str, is_part_one:bool) -> u32 {
 
                 caves.push(Cave {
                     connected: Vec::new(),
-                    large: node.chars().any(|c| c.is_ascii_uppercase())
+                    large: node.chars().any(|c| c.is_ascii_uppercase()),
                 });
             }
         }
@@ -83,8 +89,7 @@ fn sol(name: &str, is_part_one:bool) -> u32 {
     let end = indexes["end"];
     if is_part_one {
         count_paths(&caves, &mut vec![false; caves.len()], start, end)
-    }
-    else {
+    } else {
         count_paths_2(&caves, &mut vec![0; caves.len()], false, start, start, end)
     }
 }
@@ -94,13 +99,11 @@ fn main() {
     assert_eq!(19, sol("ex2.txt", true));
     assert_eq!(226, sol("ex3.txt", true));
 
-
     println!("{}", sol("input.txt", true));
 
     assert_eq!(36, sol("ex1.txt", false));
     assert_eq!(103, sol("ex2.txt", false));
     assert_eq!(3509, sol("ex3.txt", false));
-
 
     println!("{}", sol("input.txt", false));
 }
