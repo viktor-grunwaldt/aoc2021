@@ -24,7 +24,7 @@ fn match_to<T>(bracket:&char,a:T,b:T,c:T,d:T,def:T) -> T {
     }
 }
 
-fn check_brackets(line: &String) -> Option<u32> {
+fn check_brackets(line: &str) -> Option<u32> {
     let mut stack: LinkedList<char> = LinkedList::new();
     for ch in line.chars() {
         // opening bracket
@@ -56,7 +56,7 @@ fn part_one(name: &str) -> u32 {
     sum
 }
 
-fn count_missing_brackets(line: &String) -> Option<u64> {
+fn count_missing_brackets(line: &str) -> Option<u64> {
     let mut stack: LinkedList<char> = LinkedList::new();
     for ch in line.chars() {
         // opening bracket

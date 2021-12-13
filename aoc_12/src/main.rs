@@ -4,7 +4,7 @@ fn read_file(name: &str) -> Vec<Vec<String>> {
     std::fs::read_to_string(name)
         .expect("file not found!")
         .lines()
-        .map(|x| x.split("-").map(|y| y.parse().unwrap()).collect())
+        .map(|x| x.split('-').map(|y| y.parse().unwrap()).collect())
         .collect()
 }
 
@@ -14,7 +14,7 @@ struct Cave {
     large: bool,
 }
 
-fn count_paths(caves: &Vec<Cave>, visited: &mut Vec<bool>, pos: usize, end: usize) -> u32 {
+fn count_paths(caves: &[Cave], visited: &mut Vec<bool>, pos: usize, end: usize) -> u32 {
     let cave = &caves[pos];
 
     if pos == end {
@@ -34,7 +34,7 @@ fn count_paths(caves: &Vec<Cave>, visited: &mut Vec<bool>, pos: usize, end: usiz
 }
 
 fn count_paths_2(
-    caves: &Vec<Cave>,
+    caves: &[Cave],
     visited: &mut Vec<u8>,
     multi_visited: bool,
     pos: usize,

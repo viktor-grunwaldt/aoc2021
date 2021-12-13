@@ -10,20 +10,18 @@ fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
     // parse draw numbers
     let draws: Vec<i8> = input[0]
         .trim()
-        .split(",")
+        .split(',')
         .map(|x| x.parse().unwrap())
         .collect();
 
     //parse into bingo blocks
-    let bs: Vec<Vec<String>> = input
+    
+
+    //parse bingo blocks into bingo boards
+    let b: Vec<Vec<Vec<i8>>> = input
         .split(|w| w.is_empty())
         .skip(1)
         .map(|w| w.to_vec())
-        .collect();
-
-    //parse bingo blocks into bingo boards
-    let b: Vec<Vec<Vec<i8>>> = bs
-        .into_iter()
         .map(|u| {          // each board
             u.iter()
                 .map(|w| {  // each row
@@ -42,12 +40,12 @@ fn mark_number(b: &mut Vec<Vec<i8>>, mark: i8) {
     b.iter_mut().flatten().for_each(|i| {
         if *i == mark {
             *i = -1;
-            return;
+            
         }
     })
 }
 
-fn is_solved(b: &Vec<Vec<i8>>) -> bool {
+fn is_solved(b: &[Vec<i8>]) -> bool {
     //check rows
     // if in any row all numbers are marked
     let rows = b.iter().any(|x| x.iter().all(|&y| y < 0));
@@ -58,7 +56,7 @@ fn is_solved(b: &Vec<Vec<i8>>) -> bool {
     rows || col
 }
 
-fn calc_sol(b: &Vec<Vec<i8>>) -> u32 {
+fn calc_sol(b: &[Vec<i8>]) -> u32 {
     // sum of all positive elements
     let res:u32 = b
         .iter()

@@ -58,13 +58,14 @@ fn part_one(name: &str) -> u32 {
     gamma * epsilon
 }
 
-fn bin_search(v: &Vec<Vec<u8>>, is_o2: bool) -> Result<usize, &'static str> {
+fn bin_search(v: &[Vec<u8>], is_o2: bool) -> Result<usize, &'static str> {
     if v.is_empty() {
         return Err("vector is empty");
     }
     let mut l = 0_usize;
     let mut r = v[0].len();
-    for ith_bit in 0..v[0].len() {
+    let len = v[0].len();
+    for bits in v.iter().take(len) {
         // o2 found
         if (l + 1) >= r {
             break;
@@ -81,14 +82,14 @@ fn bin_search(v: &Vec<Vec<u8>>, is_o2: bool) -> Result<usize, &'static str> {
         // now if the bit is 0, the right side shrinks
         //     if the bit is 1, the left  side shrinks
 
-        // println!("{:?}\nelem:\t{:?}", v[ith_bit], (v[ith_bit][ (l+r+1)/2 ], (l+r)/2));
-        if (v[ith_bit][(l + r) / 2] == 48) == is_o2 {
+        // println!("{:?}\nelem:\t{:?}", bits, (bits[ (l+r+1)/2 ], (l+r)/2));
+        if (bits[(l + r) / 2] == 48) == is_o2 {
             // there is more 0's
             // right side shrinks
             // find first 0 bit from right side
 
             for ith_word in (l..r).rev() {
-                if v[ith_bit][ith_word] == 48 {
+                if bits[ith_word] == 48 {
                     r = ith_word + 1;
                     break;
                 }
@@ -97,8 +98,8 @@ fn bin_search(v: &Vec<Vec<u8>>, is_o2: bool) -> Result<usize, &'static str> {
             // there is more 1's
             // left side shrinks
             // find first 1 bit from left side
-            for ith_word in l..r {
-                if v[ith_bit][ith_word] == 49 {
+            for (ith_word, ch) in bits.iter().enumerate().take(r).skip(l) {
+                if *ch == 49 {
                     l = ith_word;
                     break;
                 }

@@ -1,7 +1,7 @@
 fn read_file(name: &str) -> Vec<u8> {
     std::fs::read_to_string(name)
         .expect("file not found!")
-        .split(",")
+        .split(',')
         .map(|x| x.parse::<i32>().unwrap() as u8)
         .collect()
 }

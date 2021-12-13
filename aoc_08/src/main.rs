@@ -26,10 +26,7 @@ fn part_one(name: &str) -> u32 {
     // 8 : len = 7
     let easy_digits:u32 = input.iter().map(|l| 
         l.iter().skip(11).filter(|w| 
-            match w.len(){
-                2|3|4|7 => true,
-                _ => false,
-            }).count() as u32
+            matches!(w.len(), 2|3|4|7)).count() as u32
     ).sum();
 
     easy_digits
@@ -45,22 +42,22 @@ fn usz2chr(c:usize) -> char{
 }
 
 fn chr2usz(c:char) -> usize{
-    if c < 'a' || 'g' < c {
+    if !('a'..='g').contains(&c) {
         panic!("tried to convert a non-letter");
     }
     c as usize - ASCII_a
 }
 
-fn diff(a:&String, b:&String) -> char{
+fn diff(a:&str, b:&str) -> char{
     // a should be the bigger set
-    assert_eq!(a.len()>b.len(), true);
+    assert!(a.len()>b.len());
     // for my usecase, I need only 1 char diff
-    let sol: char = a.chars().filter(|c| !b.contains(*c)).nth(0).expect("no diffs found :<");
+    let sol: char = a.chars().find(|c| !b.contains(*c)).expect("no diffs found :<");
     sol
 }
 
-fn decode_string(a:&String, decoder:&Vec<char>) -> String {
-    if a.chars().any(|c|  c < 'a' || 'g' < c) {
+fn decode_string(a:&str, decoder:&[char]) -> String {
+    if a.chars().any(|c|  !('a'..='g').contains(&c)) {
         panic!("invalid string");
     }
     let sol:String = a.chars().map(|c|
@@ -70,8 +67,8 @@ fn decode_string(a:&String, decoder:&Vec<char>) -> String {
     sol
 }
 
-fn encode_string(a:&String, decoder:&Vec<char>) -> String {
-    if a.chars().any(|c|  c < 'a' || 'g' < c) {
+fn encode_string(a:&str, decoder:&[char]) -> String {
+    if a.chars().any(|c|  !('a'..='g').contains(&c)) {
         panic!("invalid string");
     }
     let mut encoder = vec![' ';7];
@@ -212,7 +209,7 @@ fn part_two(name: &str) -> u64 {
         //                 decode last 4 numbers
         sum += line.iter().skip(11).map(|num| {
             to_digits.get(                     // after decoding segments get number
-                &decode_string(&num, &decoder) // decode segments
+                &decode_string(num, &decoder) // decode segments
                 .chars().sorted()           // sort decoded segments to match our default
                 .collect::<String>()        // after sorting segments put in order
             ).unwrap()                      // panic if segment not in dict

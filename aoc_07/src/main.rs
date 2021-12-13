@@ -1,7 +1,7 @@
 fn read_file(name: &str) -> Vec<i32> {
     std::fs::read_to_string(name)
         .expect("file not found!")
-        .split(",")
+        .split(',')
         .map(|x| x.parse::<i32>().unwrap())
         .collect()
 }
@@ -13,11 +13,11 @@ fn part_one(name: &str) -> i32 {
     let max = points.iter().max().unwrap();
     //let's see how fast rust is
     // so basically calculate all paths from min to max and pick the smallest one
-    let sol = (*min..*max)
+    
+    (*min..*max)
         .map(|w| points.iter().fold(0, |acc, x| acc + (x - w).abs()))
         .min()
-        .unwrap();
-    sol
+        .unwrap()
 }
 
 fn part_two(name: &str) -> i32 {
@@ -33,11 +33,11 @@ fn part_two(name: &str) -> i32 {
     let max = points.iter().max().unwrap();
     //let's see how fast rust is
     // so basically calculate all paths from min to max and pick the smallest one
-    let sol = (*min..*max)
+    
+    (*min..*max)
         .map(|w| points.iter().fold(0, |acc, x| acc + f((x - w).abs())))
         .min()
-        .unwrap();
-    sol
+        .unwrap()
 }
 
 fn main() {

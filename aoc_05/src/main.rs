@@ -21,7 +21,7 @@ fn part_zero(file: &str, show_diag: bool) -> i32 {
         .into_iter()
         .map(|w| {
             w.replace(" -> ", ",")
-                .split(",")
+                .split(',')
                 .map(|v| v.parse().unwrap())
                 .collect()
         })

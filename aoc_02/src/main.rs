@@ -19,7 +19,7 @@ fn part_one(name: &str) -> i32 {
             _ => (),
         }
     }
-    return depth * dist;
+    depth * dist
 }
 
 fn part_two(name: &str) -> i32 {
@@ -39,7 +39,7 @@ fn part_two(name: &str) -> i32 {
             _ => (),
         }
     }
-    return depth * dist;
+    depth * dist
 }
 
 fn main() {
