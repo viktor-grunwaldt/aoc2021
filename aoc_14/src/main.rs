@@ -15,7 +15,7 @@ fn part_one(name: &str, iter: usize) -> u64 {
     let input = read_file(name);
     let mut inp = input.split(|w| w.is_empty());
     let mut word = inp.next().unwrap().first().unwrap().clone();
-    let b = word.chars().last().unwrap().to_string(); //take last letter
+    let b = word.chars().last().unwrap().to_string(); 
     let p2 = inp.next().unwrap();
 
     let mut subst: HashMap<String, String> = HashMap::new();
@@ -59,7 +59,7 @@ fn part_two(name: &str, iter: usize) -> u64 {
     let word = inp.next().unwrap().first().unwrap().clone();
     let p2 = inp.next().unwrap();
 
-    let last = word.chars().last().unwrap(); //take last letter
+    let last = word.chars().rev().next().unwrap(); //take last letter
     let first = word.chars().next().unwrap(); //take first letter
 
     // rules as hashmap
@@ -70,14 +70,14 @@ fn part_two(name: &str, iter: usize) -> u64 {
     for rule in p2 {
         // rule: "AB -> C"
         // dict: "(AB , (AC, CB))"
-        let templ: Vec<&str> = rule.split(" -> ").collect();
-        let (fst, snd) = templ[0].split_at(1);
+        let elem: Vec<&str> = rule.split(" -> ").collect();
+        let (fst, snd) = elem[0].split_at(1);
         rules.insert(
-            templ[0].to_string(),
-            ([fst, templ[1]].concat(),
-            [templ[1], snd].concat()),
+            elem[0].to_string(),
+            ([fst, elem[1]].concat(),
+            [elem[1], snd].concat()),
         );
-        rel_count.insert(templ[0].to_string(), 0);
+        rel_count.insert(elem[0].to_string(), 0);
     }
 
     // decompose word onto adj hashmap
@@ -100,20 +100,16 @@ fn part_two(name: &str, iter: usize) -> u64 {
         }
     }
 
-
-
-    // count chars
+    // count chars (we add leftmost and rightmost char so that we can divide the count by 2)
     let mut char_count: HashMap<char, u64> = [(first, 1), (last, 1)]
         .iter().cloned().collect();
-    // let mut char_count: HashMap<char, u64> = HashMap::new();
-    for (k, v) in rel_count.iter() {
+    for (k, v) in rel_count.into_iter() {
         for ch in k.chars() {
             if let Some(ptr) = char_count.get_mut(&ch) {
-                // if key found
-                *ptr += v;
+                *ptr += v;// if key found
             }
             else {
-                char_count.insert(ch, *v);
+                char_count.insert(ch, v);
             }
         }
     }
