@@ -121,7 +121,7 @@ fn part_two(name: &str) -> u32 {
         for j in 0..5 {
             for k in 0..size {
                 for l in 0..len {
-                    tab[k + i * size][l + j * len] = (input[k][l] - 1 + (i + j) as u32) % 9 + 1;
+                    tab[k + i * size][l + j * len] = (input[k][l] + (i + j) as u32  - 1) % 9 + 1;
                 }
             }
         }
