@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use std::fs::read_to_string;
+use std::{fs::read_to_string};
 use nom::{
     bits::complete::tag,
     branch::alt,
@@ -7,7 +7,7 @@ use nom::{
     complete::take,
     multi::{many0, length_count},
     sequence::{pair, preceded},
-    IResult, InputLength, 
+    IResult, InputLength, Parser, 
 };
 
 #[derive(Debug, Clone)]
@@ -32,7 +32,7 @@ fn p_tail_chunk(input: BitInput) -> IResult<BitInput, u8> {
     preceded(tag(0, 1usize), take(4u8))(input)
 }
 
-fn nibbles_to_u32(input: (Vec<u8>, u8)) -> u64 {
+fn nibbles_to_u64(input: (Vec<u8>, u8)) -> u64 {
     input.0
         .into_iter()
         .chain(std::iter::once(input.1))
@@ -42,7 +42,7 @@ fn nibbles_to_u32(input: (Vec<u8>, u8)) -> u64 {
 fn p_literal(input: BitInput) -> IResult<BitInput, PacVals> {
     let parser = map(
         pair(many0(p_leading_chunk), p_tail_chunk),
-        nibbles_to_u32
+        nibbles_to_u64
     );
     map(parser, PacVals::Literal)(input)
 }
@@ -70,36 +70,46 @@ fn p_operator_by_pacnum(input: BitInput) -> IResult<BitInput, Vec<Packet>> {
 /// length_value isn't implemented on bits
 /// see: https://github.com/Geal/nom/issues/1477 and 1478
 //
-// fn p_operator_by_bitlen(input: BitInput) -> IResult<BitInput, Vec<PacketContainer>> {
+// fn p_operator_by_bitlen(input: BitInput) -> IResult<BitInput, Vec<Packet>> {
 //     preceded(
 //         tag(0b1, 1u8),
 //         length_value(
 //             take::<_,u16,usize,_>(15), 
-//             many0(p_packet_container)
+//             many0(p_packet)
 //     ))(input)
 // }
 
-fn p_operator_by_bitlen<'a>(input: (&'a [u8], usize)) 
--> IResult<BitInput, Vec<Packet>> {
+fn scuffed_length_value<'a>(n:usize) 
+-> impl Parser<BitInput<'a>, 
+                Vec<Packet>, 
+                nom::error::Error<BitInput<'a>>> 
+{
+    move |mut input: BitInput<'a>| {
+        let mut packets = Vec::new();
+        let input_len = input.input_len();
+
+        while input_len - input.input_len() < n {
+            let (new_input, next_packet) = p_packet(input)?;
+            packets.push(next_packet);
+            input = new_input;
+        }
+
+        match (input_len - input.input_len()).cmp(&n) {
+            std::cmp::Ordering::Equal => Ok((input, packets)),
+            std::cmp::Ordering::Greater => panic!("nom error handling hard"),
+            // std::cmp::Ordering::Greater => Err(nom::Err::Failure(input)),
+            std::cmp::Ordering::Less => unreachable!(),
+        }
+    }
+}
+
+fn p_operator_by_bitlen(input: BitInput) -> IResult<BitInput, Vec<Packet>> {
     preceded(
         tag(0, 1u8),
-        flat_map(take(15usize), |n: usize| {
-            move |mut input: (&'a [u8], usize)| {
-                let mut packets = Vec::new();
-                let input_len = input.input_len();
-
-                while input_len - input.input_len() < n {
-                    let (new_input, next_packet) = p_packet(input)?;
-                    packets.push(next_packet);
-                    input = new_input;
-                }
-
-                // TODO: return an error here. nom error handling is a pain
-                assert_eq!(input_len - input.input_len(), n);
-
-                Ok((input, packets))
-            }
-        }),
+        flat_map(
+            take(15usize), 
+            scuffed_length_value,
+        ),
     )(input)
 }
 
