@@ -17,7 +17,7 @@ fn near_index(x: usize, y: usize) -> Vec<(usize, usize)> {
     
 }
 
-fn iter_expl(tab: &mut Vec<Vec<u8>>) -> HashSet<(usize, usize)> {
+fn iter_expl(tab: &mut [Vec<u8>]) -> HashSet<(usize, usize)> {
     let mut exploded: HashSet<(usize, usize)> = HashSet::new();
     loop {
         let mut expl: u32 = 0;

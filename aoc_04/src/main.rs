@@ -36,7 +36,7 @@ fn make_boards(input: Vec<String>) -> (Vec<i8>, Vec<Vec<Vec<i8>>>) {
     (draws, b)
 }
 
-fn mark_number(b: &mut Vec<Vec<i8>>, mark: i8) {
+fn mark_number(b: &mut [Vec<i8>], mark: i8) {
     b.iter_mut().flatten().for_each(|i| {
         if *i == mark {
             *i = -1;

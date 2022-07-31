@@ -8,19 +8,18 @@ fn read_file(name: &str) -> Vec<Vec<bool>> {
 
 fn hex_to_bits(s: &str) -> Vec<bool> {
     s.chars()
-        .map(|c| char_to_bitstream(c.to_digit(16).unwrap()))
-        .flatten()
+        .flat_map(char_to_bitstream)
         .collect()
 }
 
-fn char_to_bitstream(n: u32) -> [bool; 4] {
+fn char_to_bitstream(c: char) -> [bool; 4] {
     // each number has to be 4 in len
     // let s = 32- n.leading_zeros() as usize;
     let mut v = [false; 4];
-    let mut n2 = n;
+    let mut n = c.to_digit(16).unwrap();
     for i in v.iter_mut().rev() {
-        *i = (n2 % 2) == 1;
-        n2 >>= 1; // haskell kek
+        *i = (n & 1) == 1;
+        n >>= 1; // haskell kek
     }
     v
 }

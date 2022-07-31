@@ -17,7 +17,7 @@ enum Dir {
 // x is vertical pos
 // y is horizontal pos
 // (x, y)
-fn transfold_dots(dots: HashSet<(usize, usize)>, fold: &(Dir, usize)) -> HashSet<(usize, usize)> {
+fn transfold_dots(dots: HashSet<(usize, usize)>, fold: (Dir, usize)) -> HashSet<(usize, usize)> {
     let is_h = fold.0 == Dir::Horizontal;
 
     dots
@@ -49,39 +49,38 @@ fn sol(name: &str, is_pt1: bool) -> u32 {
     let mut dots: HashSet<(usize, usize)> = p1 // parse into set of pairs
         .iter()
         .map(|l| {
-            let d: Vec<usize> = l.split(',').map(|w| w.parse().unwrap()).collect();
-            (d[0], d[1])
+            let (x, y) = l.split_once(',').unwrap();
+            (x.parse().unwrap(), 
+             y.parse().unwrap())
         })
         .collect();
 
     let folds: Vec<(Dir, usize)> = p2 // parse into vec of direction and line
         .iter()
         .map(|l: &String| {
-            let instruc: Vec<&str> = l.split_whitespace().nth(2).unwrap().split('=').collect();
-            let f_dir = match instruc[0] {
+            let (orientation, axis) = l.strip_prefix("fold along ").unwrap()
+                                        .split_once('=').unwrap();
+            let f_dir = match orientation {
                 "x" => Some(Dir::Vertical),
                 "y" => Some(Dir::Horizontal),
                 _ => None,
             };
-            (f_dir.unwrap(), instruc[1].parse().unwrap())
+            (f_dir.unwrap(), axis.parse().unwrap())
         })
         .collect();
 
     if is_pt1 {
         // fold once
-        dots = transfold_dots(dots, &folds[0]);
+        dots = transfold_dots(dots, folds.into_iter().next().unwrap());
     } else {
         // fold all
         for fold in folds {
-            dots = transfold_dots(dots, &fold);
+            dots = transfold_dots(dots, fold);
         }
-    }
-
-    if !is_pt1 {
         // print with hardcoded size
         print_dots(&dots, 40, 6);
     }
-
+    
     dots.len() as u32
 }
 

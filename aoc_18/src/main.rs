@@ -31,11 +31,11 @@ fn explode(pos: usize, v: &mut Vec<(u8, u8)>) {
     // rust is weird and picky about borrowing
     let expl_l = v.get(pos).to_owned().unwrap().0;
     let expl_r = v.get(pos + 1).to_owned().unwrap().0;
-    if pos > 0 {
+    if 0 < pos {
         v[pos - 1].0 += expl_l;
     }
-    if let Some(elem) = v.get_mut(pos + 2) {
-        elem.0 += expl_r;
+    if pos + 2 < v.len() {
+        v[pos + 2].0 += expl_r;
     }
     v.remove(pos);
     v[pos] = (0, 3);
@@ -45,7 +45,7 @@ fn explode(pos: usize, v: &mut Vec<(u8, u8)>) {
 fn split(pos: usize, v: &mut Vec<(u8, u8)>) {
     let (val, dep) = v[pos];
     v[pos] = (val / 2, dep + 1);
-    v.insert(pos + 1, (val / 2 + val % 2, dep + 1));
+    v.insert(pos + 1, ((val + 1) / 2, dep + 1));
 }
 
 // until no changes occur, explode then split the numbers
@@ -70,17 +70,18 @@ fn add_snail(a: Vec<(u8, u8)>, b: Vec<(u8, u8)>) -> Vec<(u8, u8)> {
     v
 }
 
-fn printable(v: &[(u8, u8)]) -> String {
-    format!("{:?}", v.iter().map(|(n, _)| *n).collect::<Vec<u8>>())
-}
+// fn printable(v: &[(u8, u8)]) -> String {
+//     format!("{:?}", v.iter().map(|(n, _)| *n).collect::<Vec<u8>>())
+// }
 
 fn magni(a: Vec<(u8, u8)>) -> u32 {
-    // copy vec to correct type
-    let mut v: Vec<_> = a.iter().map(|&(x, y)| (x as u32, y)).collect();
+    // parse vec to correct type
+    let mut v: Vec<_> = a.into_iter().map(|(x, y)| (x as u32, y)).collect();
     fn magni_rec(v: &mut Vec<(u32, u8)>) -> u32 {
         if v.len() == 2 {
             return v[0].0 * 3 + v[1].0 * 2;
         }
+        // find first pair of nums
         let pos = v
             .windows(2)
             .position(|comp| comp[0].1 == comp[1].1)
@@ -99,9 +100,12 @@ fn magni(a: Vec<(u8, u8)>) -> u32 {
 
 fn part_one(name: &str) -> u32 {
     let data = read_file(name);
-    let homework = data.into_iter().map(parse_line);
-    // we have to add a sequence, process it and then add next sequence
-    let s = homework.reduce(add_snail).unwrap();
+
+    let s = data
+        .into_iter()
+        .map(parse_line)
+        .reduce(add_snail)
+        .unwrap();
     // println!("{}", printable(&s));
 
     magni(s)
@@ -111,17 +115,13 @@ fn part_two(name: &str) -> u32 {
     use itertools::Itertools;
 
     let data = read_file(name);
-    // had to collect homework in order to create the reverse pairs
-    let homework: Vec<_> = data.into_iter().map(parse_line).collect();
-    // create reverse pairs
-    let pairs = homework
-        .iter()
-        .combinations(2)
-        .chain(homework.iter().rev().combinations(2));
     // find the biggest magnitude of all sums of pairs
     // had to use to_vec since add_snail doesn't borrow
-    pairs
-        .map(|pair| pair.iter().map(|v| v.to_vec()).reduce(add_snail).unwrap())
+    data
+        .into_iter()
+        .map(parse_line)
+        .permutations(2)
+        .map(|pair| add_snail(pair[0].clone(), pair[1].clone()))
         .map(magni)
         .max()
         .unwrap()

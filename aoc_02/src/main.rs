@@ -27,14 +27,14 @@ fn part_two(name: &str) -> i32 {
     let mut dist = 0;
     let mut depth = 0;
     for i in read_file(name) {
-        let split: Vec<&str> = i.split_whitespace().collect();
-        let val: i32 = split[1].parse().expect("couldn't parse value");
-        match split[0] {
+        let (dir, str_val) = i.split_once(' ').unwrap();
+        let val: i32 = str_val.parse().expect("couldn't parse value");
+        match dir {
             "down" => aim += val,
             "up" => aim -= val,
             "forward" => {
                 dist += val;
-                depth += aim * val
+                depth += aim * val;
             }
             _ => (),
         }

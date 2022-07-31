@@ -30,7 +30,7 @@ fn count_char(pattern: u8, v: Vec<Vec<u8>>) -> Vec<u32> {
 }
 
 fn vec_u8_to_num(v: Vec<u8>) -> u32 {
-    return u32::from_str_radix(std::str::from_utf8(&v).unwrap(), 2).unwrap();
+    u32::from_str_radix(std::str::from_utf8(&v).unwrap(), 2).unwrap()
 }
 
 // I needed to unga bunga convert types

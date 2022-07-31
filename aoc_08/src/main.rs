@@ -32,20 +32,20 @@ fn part_one(name: &str) -> u32 {
     easy_digits
 }
 
-const ASCII_a: usize = 'a' as usize;
+const LOWER_A: usize = 'a' as usize;
 
 fn usz2chr(c:usize) -> char{
     if c > 7{
         panic!("tried to convert a non-letter");
     }
-    (c + ASCII_a) as u8 as char
+    (c + LOWER_A) as u8 as char
 }
 
 fn chr2usz(c:char) -> usize{
     if !('a'..='g').contains(&c) {
         panic!("tried to convert a non-letter");
     }
-    c as usize - ASCII_a
+    c as usize - LOWER_A
 }
 
 fn diff(a:&str, b:&str) -> char{
@@ -74,35 +74,39 @@ fn encode_string(a:&str, decoder:&[char]) -> String {
     let mut encoder = vec![' ';7];
     // generates a reversed decoder
 
-    decoder.iter().enumerate().filter(|(_, &ch)| ch != ' ')
-    .for_each(|(i, &x)| encoder[chr2usz(x)] = usz2chr(i));
+    decoder
+        .iter()
+        .enumerate()
+        .filter(|(_, &ch)| ch != ' ')
+        .for_each(|(i, &x)| encoder[chr2usz(x)] = usz2chr(i));
     
     // I HAVE NO IDEA WHY I NEED TO COPY THIS CODE FROM DECODE
     // BUT ONLY THIS WAY IT WORKS
-    let sol:String = a.chars().map(|c|
-         encoder[chr2usz(c)])
-         .collect();
+    let sol:String = a
+        .chars()
+        .map(|c| encoder[chr2usz(c)])
+        .collect();
     
     sol
 }
 
 fn part_two(name: &str) -> u64 {
-    let digits:Vec<String> = (vec![
-        "abcefg", //    0
-        "cf", //        1
-        "acdeg", //     2
-        "acdfg", //     3
-        "bcdf", //      4
-        "abdfg", //     5
-        "abdefg", //    6
-        "acf", //       7
-        "abcdefg", //   8
-        "abcdfg", //    9
-    ]).iter().map(|x| x.to_string()).collect();
+    let digits:Vec<String> = vec![
+        String::from("abcefg"), //    0
+        String::from("cf"), //        1
+        String::from("acdeg"), //     2
+        String::from("acdfg"), //     3
+        String::from("bcdf"), //      4
+        String::from("abdfg"), //     5
+        String::from("abdefg"), //    6
+        String::from("acf"), //       7
+        String::from("abcdefg"), //   8
+        String::from("abcdfg"), //    9
+    ];
     
     let mut to_digits:HashMap<String, char> = HashMap::new();
     for (i, digit) in digits.iter().enumerate(){
-        to_digits.insert((digit).clone(), (i as u8 + 48) as char);
+        to_digits.insert(digit.clone(), (i as u8 + 48) as char);
     }
 
     let input = read_file(name);
@@ -167,16 +171,17 @@ fn part_two(name: &str) -> u64 {
         // so I'm storing my dict as a vector with a-> 0, b->1 etc...
         let mut decoder = vec![' ';7];
         let mut encoded_numbers = vec![String::new(); 10];
+        let scrambled:Vec<String> = line.iter().take(10).cloned().collect();
         // 1.
-        encoded_numbers[1] = line.iter().take(10).cloned().find(|x| x.len()==2).unwrap();
-        encoded_numbers[4] = line.iter().take(10).cloned().find(|x| x.len()==4).unwrap();
-        encoded_numbers[7] = line.iter().take(10).cloned().find(|x| x.len()==3).unwrap();
+        encoded_numbers[1] = scrambled.iter().find(|x| x.len()==2).cloned().unwrap();
+        encoded_numbers[4] = scrambled.iter().find(|x| x.len()==4).cloned().unwrap();
+        encoded_numbers[7] = scrambled.iter().find(|x| x.len()==3).cloned().unwrap();
         
         decoder[chr2usz(diff(&encoded_numbers[7], &encoded_numbers[1]))] = 'a';
         // 2.
         let mut letters = vec![0u32;7];
-        for num in line.iter().take(10) {
-            num.chars().for_each(|bit| letters[bit as usize - ASCII_a] += 1);
+        for num in scrambled {
+            num.chars().for_each(|bit| letters[bit as usize - LOWER_A] += 1);
         }
         // find b e f
         for (le, freq) in letters.iter().enumerate(){
@@ -190,7 +195,7 @@ fn part_two(name: &str) -> u64 {
         }
         
         // 3.
-        let char_to_d = diff(&encoded_numbers[4], &encode_string(&"bcf".to_string(), &decoder));
+        let char_to_d = diff(&encoded_numbers[4], &encode_string("bcf", &decoder));
         decoder[chr2usz(char_to_d)] = 'd';
         // 4.
         for (i, c) in decoder.iter_mut().enumerate() {
@@ -221,7 +226,7 @@ fn part_two(name: &str) -> u64 {
 
 fn main() {
     assert_eq!(26, part_one("example.txt"));
-    assert_eq!('d',diff(&"abcd".to_string(), &"abc".to_string()));
+    assert_eq!('d',diff("abcd", "abc"));
     let decoder:Vec<char> = vec!['e','f',' ',' ',' ',' ',' ',];
     let encoder:Vec<char> = vec![' ',' ',' ',' ','a','b',' ',];
     let baba = "baba".to_string();
