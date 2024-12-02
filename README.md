@@ -1,4 +1,6 @@
-# aoc2021
+# Advent of Code 2021 (Archived)
+
+This repository has been archived. The new repo will contain both newer years as well as this one: [Advent-of-Code](https://github.com/viktor-grunwaldt/Advent-of-Code).
 
 Admire this god ugly rust code
 
